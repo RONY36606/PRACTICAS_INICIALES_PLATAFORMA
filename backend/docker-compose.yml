@@ -1,0 +1,45 @@
+version: '3.8'
+
+services:
+  mysql_db:  # Nombre del servicio
+    image: mysql:8.0  # Versión de MySQL
+    container_name: mysql_BBDD_I3G2  # Nombre del contenedor
+    environment:
+      MYSQL_ROOT_PASSWORD: admin124  # Contraseña de acceso Obligatoria
+      MYSQL_DATABASE: usuarios  # DB creada al inicio
+      MYSQL_USER: useradmin  # Usuario admin
+      MYSQL_PASSWORD: adminpass  # Contraseña del admin
+    volumes:
+      - mysql_data:/var/lib/mysql  # Persistencia de datos
+      - ./mysql-init:/docker-entrypoint-initdb.d # Script de inicialización
+    ports:
+      - "3306:3306"  # Puerto: Host:Contenedor
+    networks:
+      - app_network  # Red personalizada para que se comuniquen los servicios de los contenedores
+    restart: unless-stopped  # Reinicio automático de la BBDD
+
+
+  # Comentado para que no se ejecute el backend hasta que se haga xd
+  backend:
+    build: .
+    container_name: backend_I3G2
+    ports:
+      - "3000:3000"
+    environment:
+      DB_HOST: mysql_db
+      DB_USER: useradmin
+      DB_PASSWORD: adminpass
+      DB_NAME: usuarios
+      DB_PORT: 3306
+    depends_on:
+      - mysql_db
+    networks:
+      - app_network
+    restart: unless-stopped
+
+networks:
+  app_network:  # Red personalizada
+    driver: bridge
+
+volumes:
+  mysql_data:  # Volumen para persistir datos

@@ -1,0 +1,21 @@
+{
+  "name": "informe-3",
+  "version": "1.0.0",
+  "description": "CRUD con Express",
+  "main": "app.js",
+  "scripts": {
+    "start": "node app.js",
+    "dev": "nodemon app.js"
+  },
+  "keywords": [],
+  "author": "M1CK3R",
+  "license": "ISC",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^5.1.0",
+    "mysql2": "^3.14.3"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.1"
+  }
+}

@@ -1,0 +1,73 @@
+h1 {
+  color: #007bff;
+  font-family: Arial, sans-serif;
+}
+button {
+  margin-top: 20px;
+  padding: 8px 16px;
+  font-size: 16px;
+}
+#formularioRegistro {
+  width: 300px;
+  margin: 30px auto;
+  padding: 20px;
+  border: 2px solid #4cacaf;
+  border-radius: 10px;
+  background-color: #f9f9f9;
+  box-shadow: 0 0 10px rgba(0,0,0,0.1);
+}
+
+#formularioRegistro label {
+  display: block;
+  margin-top: 15px;
+  font-weight: bold;
+  color: #333;
+}
+
+#formularioRegistro input {
+  width: 100%;
+  padding: 8px;
+  margin-top: 5px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  box-sizing: border-box;
+}
+
+#formularioRegistro button {
+  margin-top: 20px;
+  width: 100%;
+  padding: 10px;
+  background-color: #4cafaf;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+#formularioRegistro button:hover {
+  background-color: #4566a0;
+}
+
+#tablaUsuarios {
+  width: 80%;
+  margin: 30px auto;
+  border-collapse: collapse;
+  box-shadow: 0 0 10px rgba(0,0,0,0.1);
+}
+
+#tablaUsuarios th, #tablaUsuarios td {
+  border: 1px solid #ccc;
+  padding: 10px;
+  text-align: left;
+}
+
+#tablaUsuarios th {
+  background-color: #4ca3af;
+  color: white;
+}
+
+#tablaUsuarios tr:nth-child(even) {
+  background-color: #f2f2f2;
+}
+
