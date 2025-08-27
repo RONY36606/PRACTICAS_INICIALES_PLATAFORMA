@@ -12,10 +12,44 @@ export class AppComponent implements OnInit {
     this.crearFormulario();
   }
 
+  registrarUsuario(): void {
+  const nombre = (document.getElementById('nombreUsuario') as HTMLInputElement).value;
+  const email = (document.getElementById('emailUsuario') as HTMLInputElement).value;
+  const contrasena = (document.getElementById('contrasenaUsuario') as HTMLInputElement).value;
+
+  if (!nombre || !email || !contrasena) {
+    alert('Todos los campos son obligatorios');
+    return;
+  }
+
+  fetch('http://localhost:3000/usuarios', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ nombre, email, contrasena })
+  })
+  .then(res => res.json())
+  .then(data => {
+    if (data.error) {
+      alert('Error: ' + data.error);
+    } else {
+      alert('✅ ' + data.message + '\nID asignado: ' + data.id);
+      this.visualizarUsuarios(); // actualiza la tabla
+    }
+  })
+  .catch(err => {
+    alert('Error al conectar con el servidor');
+    console.error(err);
+  });
+}
+
+
   configurarBotones(): void {
     const btnActualizar = document.getElementById('btnActualizar');
     const btnEliminar = document.getElementById('btnEliminar');
     const btnVisualizar = document.getElementById('btnVisualizar');
+    const btnRegistrar = document.getElementById('btnRegistrar');
+    btnRegistrar?.addEventListener('click', () => this.registrarUsuario());
+
 
     btnActualizar?.addEventListener('click', () => this.actualizarUsuario());
     btnEliminar?.addEventListener('click', () => this.eliminarUsuario());
