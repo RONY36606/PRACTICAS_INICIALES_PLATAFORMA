@@ -1,4 +1,14 @@
-<div id="contenedorFormulario"></div>
+<div id="contenedorFormulario">
+  <input type="number" id="idUsuario" placeholder="ID del usuario" />
+  <input type="text" id="nombreUsuario" placeholder="Nuevo nombre" />
+  <input type="email" id="emailUsuario" placeholder="Nuevo email" />
+  <input type="password" id="contrasenaUsuario" placeholder="Nueva contraseña" />
+
+  <button id="btnActualizar">Actualizar usuario</button>
+  <button id="btnEliminar">Eliminar usuario</button>
+  <button id="btnVisualizar">Mostrar tabla de usuarios</button>
+</div>
+
 <table id="tablaUsuarios">
   <thead>
     <tr>
@@ -9,6 +19,6 @@
     </tr>
   </thead>
   <tbody>
-    <!-- Las filas se agregarán dinámicamente -->
+    <!-- Se llenará dinámicamente -->
   </tbody>
 </table>
