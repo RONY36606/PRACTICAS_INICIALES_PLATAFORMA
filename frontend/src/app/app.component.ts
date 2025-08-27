@@ -9,8 +9,9 @@ export class AppComponent implements OnInit {
   constructor(private renderer: Renderer2) {}
 
   ngOnInit(): void {
-    
-  }
+  this.configurarBotones();
+}
+
 
   registrarUsuario(): void {
   const nombre = (document.getElementById('nombreUsuario') as HTMLInputElement).value;
