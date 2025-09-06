@@ -1,6 +1,1 @@
-# ProgramasDockerizables
-Programas probados que funcionan en contenedores de Docker
-# PRACTICAS-INICIALES-CRUD-FINAL-XD
-# PRACTICAS-INICIALES-CRUD-FINAL-XD
-# PRACTICAS-INICIALES-CRUD-FINAL-XD
 # PRACTICAS_INICIALES_PLATAFORMA
