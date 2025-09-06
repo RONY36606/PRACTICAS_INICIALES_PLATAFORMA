@@ -15,6 +15,11 @@ const db = new sqlite3.Database('./users.db', err => {
 
 // 2. Crea la tabla usuarios y un registro de ejemplo
 db.serialize(() => {
+
+  db.run("DROP TABLE IF EXISTS users_cursos");
+  db.run("DROP TABLE IF EXISTS cursos");
+  db.run("DROP TABLE IF EXISTS users");
+
   db.run(`
     CREATE TABLE IF NOT EXISTS users (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -26,12 +31,20 @@ db.serialize(() => {
   db.run(`
     CREATE TABLE IF NOT EXISTS cursos (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
-      userId INTEGER,
-      curso TEXT,
-      FOREIGN KEY(userId) REFERENCES users(id)
+      nombre TEXT UNIQUE
     )
-  `);
+      `);
 
+  // Tabla intermedia para la relación muchos a muchos entre usuarios y cursos
+  db.run(`
+    CREATE TABLE IF NOT EXISTS users_cursos (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      userId INTEGER,
+      cursoId INTEGER,
+      FOREIGN KEY(userId) REFERENCES users(id),
+      FOREIGN KEY(cursoId) REFERENCES cursos(id)
+    );
+  `);
   
 
   // Insertar usuario inicial
@@ -41,17 +54,18 @@ db.serialize(() => {
     function (err) {
       if (err) throw err;
 
-      const userId = this.lastID || 1; // Si ya existía 'demo', asumimos id=1
-      const cursos = ["Matemática Basica 1", "Social Humanistica 1", "Fisica Basica"];
+      const userId = this.lastID || 1;
+      const cursos = ["Matemática Básica 1", "Social Humanística 1", "Física Básica"];
 
       cursos.forEach((curso) => {
-        db.run(
-          `INSERT INTO cursos(userId, curso) VALUES(?, ?)`,
-          [userId, curso]
-        );
+        db.run(`INSERT OR IGNORE INTO cursos(nombre) VALUES(?)`, [curso], function () {
+          const cursoId = this.lastID;
+          db.run(`INSERT INTO users_cursos(userId, cursoId) VALUES(?, ?)`, [userId, cursoId]);
+        });
       });
     }
   );
+
 });
 // 3. Ruta de registro (sin encriptar)
 app.post('/api/register', (req, res) => {
