@@ -21,9 +21,36 @@ db.serialize(() => {
       username TEXT UNIQUE,
       password TEXT
     )`);
+
+    // Tabla para cursos asociados a usuarios
+  db.run(`
+    CREATE TABLE IF NOT EXISTS cursos (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      userId INTEGER,
+      curso TEXT,
+      FOREIGN KEY(userId) REFERENCES users(id)
+    )
+  `);
+
+  
+
+  // Insertar usuario inicial
   db.run(
     `INSERT OR IGNORE INTO users(username, password) VALUES(?, ?)`,
-    ['demo', '1234']
+    ['demo', '1234'],
+    function (err) {
+      if (err) throw err;
+
+      const userId = this.lastID || 1; // Si ya existía 'demo', asumimos id=1
+      const cursos = ["Matemática Basica 1", "Social Humanistica 1", "Fisica Basica"];
+
+      cursos.forEach((curso) => {
+        db.run(
+          `INSERT INTO cursos(userId, curso) VALUES(?, ?)`,
+          [userId, curso]
+        );
+      });
+    }
   );
 });
 // 3. Ruta de registro (sin encriptar)
