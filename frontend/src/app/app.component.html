@@ -1,26 +1,54 @@
-<div id="contenedorFormulario">
-  <input type="number" id="idUsuario" placeholder="ID del usuario" />
-  <input type="text" id="nombreUsuario" placeholder="Nuevo nombre" />
-  <input type="email" id="emailUsuario" placeholder="Nuevo email" />
-  <input type="password" id="contrasenaUsuario" placeholder="Nueva contraseña" />
+<div class="container">
+  <div class="form-card">
+    <h2>{{ isRegister ? 'Registro de Usuario UEDI 2.0' : 'Iniciar Sesión UEDI 2.0' }}</h2>
 
-  <button id="btnRegistrar">Registrar usuario</button>
+    <form (ngSubmit)="onSubmit()">
+      <input
+        [(ngModel)]="username"
+        name="username"
+        placeholder="Usuario"
+      />
 
-  <button id="btnActualizar">Actualizar usuario</button>
-  <button id="btnEliminar">Eliminar usuario</button>
-  <button id="btnVisualizar">Mostrar tabla de usuarios</button>
+      <input
+        type="password"
+        [(ngModel)]="password"
+        name="password"
+        placeholder="Contraseña"
+      />
+
+      <!-- Campo de confirmación -->
+      <ng-container *ngIf="isRegister">
+        <input
+          type="password"
+          [(ngModel)]="confirm"
+          name="confirm"
+          placeholder="Repite contraseña"
+        />
+      </ng-container>
+
+      <!-- Mensaje de validación en tiempo real -->
+      <p class="message" *ngIf="isRegister && confirm && password !== confirm">
+        Las contraseñas no coinciden
+      </p>
+
+      <button
+        type="submit"
+        [disabled]="isRegister && password !== confirm"
+      >
+        {{ isRegister ? 'Registrarse' : 'Entrar' }}
+      </button>
+    </form>
+
+    <p class="message">{{ message }}</p>
+
+    <a
+      class="toggle"
+      href="#"
+      (click)="toggleForm(); $event.preventDefault()"
+    >
+      {{ isRegister
+        ? '¿Ya tienes cuenta? Inicia sesión'
+        : '¿No tienes cuenta? Regístrate' }}
+    </a>
+  </div>
 </div>
-
-<table id="tablaUsuarios">
-  <thead>
-    <tr>
-      <th>ID</th>
-      <th>Nombre</th>
-      <th>Email</th>
-      <th>Contraseña</th>
-    </tr>
-  </thead>
-  <tbody>
-    <!-- Se llenará dinámicamente -->
-  </tbody>
-</table>
