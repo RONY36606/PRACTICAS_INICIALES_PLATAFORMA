@@ -15,10 +15,10 @@ const db = new sqlite3.Database('./users.db', err => {
 
 // 2. Crea la tabla usuarios y un registro de ejemplo
 db.serialize(() => {
-  // Elimiar tablas anteriores
-  db.run("DROP TABLE IF EXISTS users_cursos");
-  db.run("DROP TABLE IF EXISTS cursos");
-  db.run("DROP TABLE IF EXISTS users");
+  // Elimiar tablas anteriores comantadas para por si acaso
+  // db.run("DROP TABLE IF EXISTS users_cursos");
+  // db.run("DROP TABLE IF EXISTS cursos");
+  // db.run("DROP TABLE IF EXISTS users");
 
 
   // Tabla de usuarios
