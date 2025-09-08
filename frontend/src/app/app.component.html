@@ -1,33 +1,64 @@
 <div class="container">
   <div class="form-card">
-    <h2>{{ isRegister ? 'Registro de Usuario UEDI 2.0' : 'Iniciar Sesión UEDI 2.0' }}</h2>
+    <h2>
+      {{ isRegister ? 'Registro de Usuario UEDI 2.0' : 'Iniciar Sesión UEDI 2.0' }}
+    </h2>
 
-    <form (ngSubmit)="onSubmit()">
+    <form (ngSubmit)="onSubmit()" #form="ngForm">
+      <!-- Registro Académico / Usuario -->
       <input
-        [(ngModel)]="username"
-        name="username"
-        placeholder="Usuario"
+        [(ngModel)]="registroAcademico"
+        name="registroAcademico"
+        placeholder="Registro Académico"
+        required
       />
 
+      <!-- Campos extra en modo registro -->
+      <ng-container *ngIf="isRegister">
+        <input
+          [(ngModel)]="nombre"
+          name="nombre"
+          placeholder="Nombre"
+          required
+        />
+        <input
+          [(ngModel)]="apellido"
+          name="apellido"
+          placeholder="Apellido"
+          required
+        />
+        <input
+          type="email"
+          [(ngModel)]="email"
+          name="email"
+          placeholder="Email"
+          required
+        />
+      </ng-container>
+
+      <!-- Contraseña -->
       <input
         type="password"
         [(ngModel)]="password"
         name="password"
         placeholder="Contraseña"
+        required
       />
 
-      <!-- Campo de confirmación -->
+      <!-- Repetir contraseña en registro -->
       <ng-container *ngIf="isRegister">
         <input
           type="password"
           [(ngModel)]="confirm"
           name="confirm"
           placeholder="Repite contraseña"
+          required
         />
       </ng-container>
 
-      <!-- Mensaje de validación en tiempo real -->
-      <p class="message" *ngIf="isRegister && confirm && password !== confirm">
+      <!-- Validación de contraseñas -->
+      <p class="message"
+         *ngIf="isRegister && confirm && password !== confirm">
         Las contraseñas no coinciden
       </p>
 

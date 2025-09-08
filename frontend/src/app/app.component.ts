@@ -14,9 +14,12 @@ import { CommonModule } from '@angular/common';
 export class AppComponent {
   // Propiedades usadas en el template
   isRegister = false;     // toggle entre login/registro
-  username = '';
+  registroAcademico = '';
+  nombre = '';
+  apellido = '';
+  email = '';
   password = '';
-  confirm = '';           // para repetir contraseña al registrar
+  confirm = '';          // para repetir contraseña al registrar
   message = '';
 
   constructor(private http: HttpClient) {}
@@ -24,7 +27,10 @@ export class AppComponent {
   // Cambia entre modo login y modo registro
   toggleForm(): void {
     this.isRegister = !this.isRegister;
-    this.username = '';
+    this.registroAcademico = '';
+    this.nombre = '';
+    this.apellido = '';
+    this.email = '';
     this.password = '';
     this.confirm = '';
     this.message = '';
@@ -32,39 +38,72 @@ export class AppComponent {
 
   // Envía login o registro según isRegister
   onSubmit(): void {
-    if (!this.username || !this.password) {
-      this.message = 'Completa usuario y contraseña';
+    // validar campos obligatorios
+    if (
+      !this.registroAcademico ||
+      !this.password ||
+      (this.isRegister &&
+        (!this.nombre || !this.apellido || !this.email))
+    ) {
+      this.message = 'Completa todos los campos requeridos';
       return;
     }
 
     if (this.isRegister) {
-      // Validar confirmación
+      // validar contraseñas iguales
       if (this.password !== this.confirm) {
         this.message = 'Las contraseñas no coinciden';
         return;
       }
-      // Llamada a /api/register
-      this.http.post<{ message: string }>(
-        'http://localhost:3000/api/register',
-        { username: this.username, password: this.password }
-      ).subscribe({
-        next: resp => this.message = resp.message,
-        error: (err: HttpErrorResponse) =>
-          this.message = err.error?.message || 'Error al registrar'
-      });
+
+      // payload para /api/register
+      const payload = {
+        registroAcademico: this.registroAcademico,
+        nombre: this.nombre,
+        apellido: this.apellido,
+        password: this.password,
+        email: this.email
+      };
+
+      this.http
+        .post<{ message: string }>(
+          'http://localhost:3000/api/register',
+          payload
+        )
+        .subscribe({
+          next: resp => {
+            this.message = resp.message;
+            // opcional: cambiar a login tras registro exitoso
+            this.isRegister = false;
+          },
+          error: (err: HttpErrorResponse) =>
+            (this.message = err.error?.message || 'Error al registrar')
+        });
     } else {
-      // Llamada a /api/login
-      this.http.post<{ message: string }>(
-        'http://localhost:3000/api/login',
-        { username: this.username, password: this.password }
-      ).subscribe({
-        next: resp => this.message = resp.message,
-        error: (err: HttpErrorResponse) =>
-          this.message = err.error?.message || 'Credenciales inválidas'
-      });
+      // payload para /api/login
+      const payload = {
+        registroAcademico: this.registroAcademico,
+        password: this.password
+      };
+
+      this.http
+        .post<{
+          message: string;
+          user?: {
+            registroAcademico: string;
+            nombre: string;
+            apellido: string;
+            email: string;
+          };
+        }>('http://localhost:3000/api/login', payload)
+        .subscribe({
+          next: resp => {
+            this.message = resp.message;
+            // aquí podrías guardar resp.user en un servicio de sesión
+          },
+          error: (err: HttpErrorResponse) =>
+            (this.message = err.error?.message || 'Credenciales inválidas')
+        });
     }
-    this.username = '';
-    this.password = '';
-    this.confirm = '';
   }
 }
