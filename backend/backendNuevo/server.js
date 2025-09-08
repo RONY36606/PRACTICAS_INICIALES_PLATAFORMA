@@ -15,51 +15,220 @@ const db = new sqlite3.Database('./users.db', err => {
 
 // 2. Crea la tabla usuarios y un registro de ejemplo
 db.serialize(() => {
+  // Elimiar tablas anteriores comantadas para por si acaso
+  // db.run("DROP TABLE IF EXISTS users_cursos");
+  // db.run("DROP TABLE IF EXISTS cursos");
+  // db.run("DROP TABLE IF EXISTS users");
+
+
+  // Tabla de usuarios
   db.run(`
     CREATE TABLE IF NOT EXISTS users (
-      id INTEGER PRIMARY KEY AUTOINCREMENT,
-      username TEXT UNIQUE,
-      password TEXT
-    )`);
-  db.run(
-    `INSERT OR IGNORE INTO users(username, password) VALUES(?, ?)`,
-    ['demo', '1234']
-  );
-});
-// 3. Ruta de registro (sin encriptar)
-app.post('/api/register', (req, res) => {
-  const { username, password } = req.body;
-  if (!username || !password) {
-    return res.status(400).json({ message: 'Faltan datos' });
-  }
+      registroAcademico TEXT PRIMARY KEY,
+      nombre TEXT NOT NULL,
+      apellido TEXT NOT NULL,
+      password TEXT NOT NULL,
+      email TEXT NOT NULL UNIQUE
+    )
+  `);
 
-  db.run(
-    `INSERT INTO users(username, password) VALUES(?, ?)`,
-    [username, password],
-    function(err) {
+  // Tabla de publicaciones
+  db.run(`
+    CREATE TABLE IF NOT EXISTS posts (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      userId TEXT NOT NULL,
+      tipo TEXT NOT NULL, -- 'course' o 'teacher'
+      curso TEXT NOT NULL, -- nombre del curso o catedrático
+      mensaje TEXT NOT NULL,
+      fechaCreacion DATETIME DEFAULT CURRENT_TIMESTAMP,
+      FOREIGN KEY (userId) REFERENCES users(registroAcademico)
+    )
+  `);
+
+  // Tabla de comentarios
+  db.run(`
+    CREATE TABLE IF NOT EXISTS comments (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      postId INTEGER NOT NULL,
+      userId TEXT NOT NULL,
+      mensaje TEXT NOT NULL,
+      fechaCreacion DATETIME DEFAULT CURRENT_TIMESTAMP,
+      FOREIGN KEY (postId) REFERENCES posts(id),
+      FOREIGN KEY (userId) REFERENCES users(registroAcademico)
+    )
+  `);
+
+  // Tabla de cursos aprobados
+  db.run(`
+    CREATE TABLE IF NOT EXISTS courses (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      userId TEXT NOT NULL,
+      nombre TEXT NOT NULL,
+      creditos INTEGER NOT NULL,
+      FOREIGN KEY (userId) REFERENCES users(registroAcademico)
+    )
+  `);
+
+  // Usuario de ejemplo
+  db.run(`
+    INSERT OR IGNORE INTO users (registroAcademico, nombre, apellido, password, email)
+    VALUES ('20210001', 'Juan', 'Perez', 'password123', 'juan@ejemplo.com')
+  `);
+});
+
+// Verificar usuarios
+const checkUser = (req, res, next) => {
+  const { registroAcademico } = req.body;
+  
+  if (!registroAcademico) {
+    return res.status(400).json({ message: 'Número de registro es requerido' });
+  }
+  
+  // Verificar si el usuario existe
+  db.get(
+    'SELECT * FROM users WHERE registroAcademico = ?',
+    [registroAcademico],
+    (err, user) => {
       if (err) {
-        if (err.message.includes('UNIQUE')) {
-          return res.status(409).json({ message: 'Usuario ya existe' });
-        }
-        return res.status(500).json({ message: 'Error de servidor' });
+        return res.status(500).json({ message: 'Error en el servidor' });
       }
-      res.json({ message: 'Registro exitoso' });
+      
+      if (!user) {
+        return res.status(404).json({ message: 'Usuario no encontrado' });
+      }
+      
+      req.user = user;
+      next();
     }
   );
+};
+
+
+
+// Rutas y endpoints
+
+// 3. Ruta de registro (sin encriptar)
+app.post('/api/register', (req, res) => {
+  const { registroAcademico, nombre, apellido, password, email } = req.body;
+  
+  if (!registroAcademico || !nombre || !apellido || !password || !email) {
+    return res.status(400).json({ message: 'Todos los campos son requeridos' });
+  }
+
+  try {
+    // Verificar si el usuario ya existe
+    db.get(
+      'SELECT * FROM users WHERE registroAcademico = ? OR email = ?',
+      [registroAcademico, email],
+      async (err, row) => {
+        if (err) {
+          return res.status(500).json({ message: 'Error en el servidor' });
+        }
+        
+        if (row) {
+          return res.status(409).json({ message: 'El usuario ya existe' });
+        }
+
+        // Insertar nuevo usuario
+        db.run(
+          'INSERT INTO users (registroAcademico, nombre, apellido, password, email) VALUES (?, ?, ?, ?, ?)',
+          [registroAcademico, nombre, apellido, password, email],
+          function(err) {
+            if (err) {
+              return res.status(500).json({ message: 'Error al crear usuario' });
+            }
+            res.status(201).json({ message: 'Usuario registrado exitosamente' });
+          }
+        );
+      }
+    );
+  } catch (error) {
+    res.status(500).json({ message: 'Error en el servidor' });
+  }
 });
 
 // 4. Endpoint POST /api/login
 app.post('/api/login', (req, res) => {
-  const { username, password } = req.body;
+  const { registroAcademico, password } = req.body;
+  
+  if (!registroAcademico || !password) {
+    return res.status(400).json({ message: 'Registro Academico y contraseña son requeridos' });
+  }
+  
+  // Buscar usuario
   db.get(
-    `SELECT * FROM users WHERE username = ? AND password = ?`,
-    [username, password],
-    (err, row) => {
-      if (err) return res.status(500).json({ message: 'Error en servidor' });
-      if (row) {
-        return res.json({ success: true, message: 'Login exitoso' });
+    'SELECT * FROM users WHERE registroAcademico = ? AND password = ?',
+    [registroAcademico, password],
+    (err, user) => {
+      if (err) {
+        return res.status(500).json({ message: 'Error en el servidor' });
       }
-      return res.status(401).json({ success: false, message: 'Credenciales inválidas' });
+      
+      if (!user) {
+        return res.status(401).json({ message: 'Credenciales inválidas' });
+      }
+      
+      // Devolver datos del usuario
+      res.json({
+        message: 'Login exitoso',
+        user: {
+          registroAcademico: user.registroAcademico,
+          nombre: user.nombre,
+          apellido: user.apellido,
+          email: user.email
+        }
+      });
+    }
+  );
+});
+
+// 5. Endpoint para recuperar contraseña
+app.post('/api/forgot-password', (req, res) => {
+  const { registroAcademico, email } = req.body;
+  
+  if (!registroAcademico || !email) {
+    return res.status(400).json({ message: 'Registro academico y email son requeridos' });
+  }
+  
+  // Verificar que los datos coincidan
+  db.get(
+    'SELECT * FROM users WHERE registroAcademico = ? AND email = ?',
+    [registroAcademico, email],
+    (err, user) => {
+      if (err) {
+        return res.status(500).json({ message: 'Error en el servidor' });
+      }
+      
+      if (!user) {
+        return res.status(404).json({ message: 'Datos incorrectos' });
+      }
+      
+      res.json({ message: 'Verificación exitosa. Puede restablecer su contraseña.' });
+    }
+  );
+});
+
+// Endpoint para restablecer contraseña
+app.post('/api/reset-password', (req, res) => {
+  const { registroAcademico, newPassword } = req.body;
+  
+  if (!registroAcademico || !newPassword) {
+    return res.status(400).json({ message: 'Registro academico y nueva contraseña son requeridos' });
+  }
+  
+  db.run(
+    'UPDATE users SET password = ? WHERE registroAcademico = ?',
+    [newPassword, registroAcademico],
+    function(err) {
+      if (err) {
+        return res.status(500).json({ message: 'Error al actualizar contraseña' });
+      }
+      
+      if (this.changes === 0) {
+        return res.status(404).json({ message: 'Usuario no encontrado' });
+      }
+      
+      res.json({ message: 'Contraseña actualizada exitosamente' });
     }
   );
 });
