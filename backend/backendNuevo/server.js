@@ -187,12 +187,12 @@ app.post('/api/forgot-password', (req, res) => {
   const { registroAcademico, email } = req.body;
   
   if (!registroAcademico || !email) {
-    return res.status(400).json({ message: 'Registro academico y email son requeridos' });
+    return res.status(400).json({ message: 'Registro academico requerido' });
   }
   
   // Verificar que los datos coincidan
   db.get(
-    'SELECT * FROM users WHERE registroAcademico = ? AND email = ?',
+    'SELECT * FROM users WHERE registroAcademico = ?',
     [registroAcademico, email],
     (err, user) => {
       if (err) {
@@ -229,6 +229,20 @@ app.post('/api/reset-password', (req, res) => {
       }
       
       res.json({ message: 'Contraseña actualizada exitosamente' });
+    }
+  );
+});
+
+// para obtener las publicaciones
+app.get('/api/posts', (req, res) => {
+  db.all(
+    'SELECT * FROM posts ORDER BY datetime(fechaCreacion) DESC',
+    [],
+    (err, rows) => {
+      if (err) {
+        return res.status(500).json({ message: 'Error no hay publicaciones' });
+      }
+      res.json(rows);
     }
   );
 });

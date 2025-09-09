@@ -1,0 +1,27 @@
+.top-bar {
+  background-color: #000;
+  color: white;
+  display: flex;
+  align-items: center;
+  padding: 0.5rem 1rem;
+}
+
+.logo {
+  font-weight: bold;
+  font-size: 1.2rem;
+  margin-right: 1rem;
+}
+
+.main-container {
+  max-width: 800px;
+  margin: auto;
+  padding: 1rem;
+}
+
+.post-card {
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 1rem;
+  margin-bottom: 1rem;
+  background: #fff;
+}

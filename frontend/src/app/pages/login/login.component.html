@@ -1,0 +1,117 @@
+<div class="container">
+  <div class="form-card">
+    <!-- Este contenedor es para el formulario registro y login -->
+    <ng-container *ngIf="!isReset">
+    <h2>
+          {{ isRegister ? 'Registro de Usuario UEDI 2.0' : 'Iniciar Sesión UEDI 2.0' }}
+        </h2>
+
+        <form (ngSubmit)="onSubmit()" #form="ngForm">
+          <!-- Registro Académico / Usuario -->
+          <input
+            [(ngModel)]="registroAcademico"
+            name="registroAcademico"
+            placeholder="Registro Académico"
+            required
+          />
+
+          <!-- Campos extra en modo registro -->
+          <ng-container *ngIf="isRegister">
+            <input
+              [(ngModel)]="nombre"
+              name="nombre"
+              placeholder="Nombre"
+              required
+            />
+            <input
+              [(ngModel)]="apellido"
+              name="apellido"
+              placeholder="Apellido"
+              required
+            />
+            <input
+              type="email"
+              [(ngModel)]="email"
+              name="email"
+              placeholder="Email"
+              required
+            />
+          </ng-container>
+
+          <!-- Contraseña -->
+          <input
+            type="password"
+            [(ngModel)]="password"
+            name="password"
+            placeholder="Contraseña"
+            required
+          />
+
+          <!-- Repetir contraseña en registro -->
+          <ng-container *ngIf="isRegister">
+            <input
+              type="password"
+              [(ngModel)]="confirm"
+              name="confirm"
+              placeholder="Repite contraseña"
+              required
+            />
+          </ng-container>
+
+                <!-- Validación de contraseñas -->
+                <p class="message"
+                  *ngIf="isRegister && confirm && password !== confirm">
+                  Las contraseñas no coinciden
+                </p>
+
+                <button
+                  type="submit"
+                  [disabled]="isRegister && password !== confirm"
+                >
+                  {{ isRegister ? 'Registrarse' : 'Entrar' }}
+                </button>
+              </form>
+
+              <p class="message">{{ message }}</p>
+
+              <a
+                class="toggle"
+                href="#"
+                (click)="toggleForm(); $event.preventDefault()"
+              >
+                {{ isRegister
+                  ? '¿Ya tienes cuenta? Inicia sesión'
+                  : '¿No tienes cuenta? Regístrate' }}
+              </a>
+
+              <!-- Este es boton para restablecer contraseña -->
+              <a class="toggle" 
+                  href="#" 
+                  (click)="goToResetPassword(); $event.preventDefault()">
+                    ¿Olvidaste tu contraseña?
+              </a>
+
+    </ng-container>
+      
+    <!-- Este contenedor es para el formulario de cambio de contraseña -->
+    <ng-container *ngIf="isReset">
+
+            <h2>Restablecer contraseña</h2>
+            <form (ngSubmit)="onSubmit()" #form="ngForm">
+              <input [(ngModel)]="registroAcademico" name="registroAcademico" placeholder="Registro Académico" required />
+              <input type="password" [(ngModel)]="newPassword" name="newPassword" placeholder="Nueva contraseña" required />
+              <input type="password" [(ngModel)]="confirmNewPassword" name="confirmNewPassword" placeholder="Confirmar nueva contraseña" required />
+              <p class="message" *ngIf="confirmNewPassword && newPassword !== confirmNewPassword">
+                Las contraseñas no coinciden
+              </p>
+              <button type="submit" [disabled]="newPassword !== confirmNewPassword">Restablecer</button>
+            </form>
+            <a class ="toggle"
+            href="#" 
+            (click)="backToLogin(); $event.preventDefault()">
+            Volver al login
+            </a>
+            <p class="message">{{ message }}</p>
+      </ng-container>      
+  </div>
+</div>

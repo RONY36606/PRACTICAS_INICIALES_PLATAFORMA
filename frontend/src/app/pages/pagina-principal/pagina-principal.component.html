@@ -1,0 +1,25 @@
+<nav class="navbar bg-dark border-bottom border-body" data-bs-theme="dark">
+    <div class="container-fluid">
+     <a class="navbar-brand py-0">
+      <img src="https://uedi.ingenieria.usac.edu.gt/campus/pluginfile.php/1/core_admin/logocompact/300x300/1755017790/uedilogo.png" alt="Logo" width="150" height="55" ></a>
+        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+          <li class="nav-item">
+            <a class="nav-link active" style="cursor: pointer;" (click)="logout()" >Menu principal</a>
+          </li>
+        </ul>
+    <form class="d-flex" role="search">
+      <input class="form-control me-2" data-bs-theme="light" type="search" placeholder="Buscar usuarios" aria-label="Search"/>
+      <button class="btn btn-success" type="submit">Buscar</button>
+    </form>
+  </div>
+</nav>
+
+<main class="main-container">
+  <h2>Publicaciones</h2>
+  <div *ngIf="posts.length === 0">Sin Publicaciones</div>
+  <div *ngFor="let post of posts" class="post-card">
+    <h3>{{ post.curso }}</h3>
+    <small>{{ post.fechaCreacion | date:'medium' }}</small>
+    <p>{{ post.mensaje }}</p>
+  </div>
+</main>
