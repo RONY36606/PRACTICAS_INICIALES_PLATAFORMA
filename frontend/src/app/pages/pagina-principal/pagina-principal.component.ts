@@ -25,6 +25,7 @@ export class PaginaPrincipalComponent implements OnInit {
 
   filtroCurso = '';
   filtroCatedratico = '';
+  ordenSeleccionado = ''; //ordenar alfabeticamente
 
   constructor(private http: HttpClient, private router: Router) {}
 
@@ -51,10 +52,18 @@ export class PaginaPrincipalComponent implements OnInit {
 
   //este metodo sera para realizar las busquedas de los cursos segun el filtro indicado
     get publicacionesFiltradas() {
-    return this.posts.filter(pub =>
+    let resultado = this.posts.filter(pub =>
       pub.curso.toLowerCase().includes(this.filtroCurso.toLowerCase()) &&
       pub.catedratico.toLowerCase().includes(this.filtroCatedratico.toLowerCase())
     );
+
+    if (this.ordenSeleccionado === 'curso') {
+      resultado = resultado.sort((a, b) => a.curso.localeCompare(b.curso));
+      } else if (this.ordenSeleccionado === 'catedratico') {
+      resultado = resultado.sort((a, b) => a.catedratico.localeCompare(b.catedratico));
+      }
+
+      return resultado;
   }
 
 

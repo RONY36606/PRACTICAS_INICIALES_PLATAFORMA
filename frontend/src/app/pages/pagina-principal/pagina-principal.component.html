@@ -1,10 +1,15 @@
 <nav class="navbar bg-dark border-bottom border-body" data-bs-theme="dark">
     <div class="container-fluid">
-     <a class="navbar-brand py-0">
+     <a class="navbar-brand py-0" href="#">
       <img src="https://uedi.ingenieria.usac.edu.gt/campus/pluginfile.php/1/core_admin/logocompact/300x300/1755017790/uedilogo.png" alt="Logo" width="150" height="55" ></a>
         <ul class="navbar-nav me-auto mb-2 mb-lg-0">
           <li class="nav-item">
-            <a class="nav-link active" style="cursor: pointer;" (click)="logout()" >Regresar al Login</a>
+            <a class="nav-link" style="cursor: pointer;" (click)="logout()" >Regresar al Login</a>
+          </li>
+        </ul>
+        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+          <li class="nav-item">
+            <a class="nav-link" style="cursor: pointer;">Ver perfil</a>
           </li>
         </ul>
     <form class="d-flex" role="search">
@@ -22,6 +27,15 @@
     </div>
     <div class="col-md-3">
       <input [(ngModel)]="filtroCatedratico" class="form-control" placeholder="Filtrar por Catedrático">
+    </div>
+
+    <!-- Este div es para el combo box con las opciones de orden alfabetico -->
+    <div class="col-md-3">
+    <select [(ngModel)]="ordenSeleccionado" class="form-select">
+      <option value="">Sin orden alfabetico</option>
+      <option value="curso">Ordenar por Curso (A–Z)</option>
+      <option value="catedratico">Ordenar por Catedrático (A–Z)</option>
+    </select>
     </div>
   </div>
 
