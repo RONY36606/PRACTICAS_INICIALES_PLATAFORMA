@@ -4,7 +4,7 @@
       <img src="https://uedi.ingenieria.usac.edu.gt/campus/pluginfile.php/1/core_admin/logocompact/300x300/1755017790/uedilogo.png" alt="Logo" width="150" height="55" ></a>
         <ul class="navbar-nav me-auto mb-2 mb-lg-0">
           <li class="nav-item">
-            <a class="nav-link active" style="cursor: pointer;" (click)="logout()" >Menu principal</a>
+            <a class="nav-link active" style="cursor: pointer;" (click)="logout()" >Regresar al Login</a>
           </li>
         </ul>
     <form class="d-flex" role="search">
@@ -14,12 +14,29 @@
   </div>
 </nav>
 
-<main class="main-container">
-  <h2>Publicaciones</h2>
-  <div *ngIf="posts.length === 0">Sin Publicaciones</div>
-  <div *ngFor="let post of posts" class="post-card">
-    <h3>{{ post.curso }}</h3>
-    <small>{{ post.fechaCreacion | date:'medium' }}</small>
-    <p>{{ post.mensaje }}</p>
+<div class="container mt-4">
+  <h2>Filtros</h2>
+  <div class="row g-3 mb-4">
+    <div class="col-md-3">
+      <input [(ngModel)]="filtroCurso" class="form-control" placeholder="Filtrar por Curso">
+    </div>
+    <div class="col-md-3">
+      <input [(ngModel)]="filtroCatedratico" class="form-control" placeholder="Filtrar por Catedrático">
+    </div>
   </div>
-</main>
+
+  <h3>Publicaciones</h3>
+  <div *ngIf="publicacionesFiltradas.length > 0; else noResultados">
+    <ul class="list-group">
+      <li *ngFor="let pub of publicacionesFiltradas" class="list-group-item">
+        <strong>{{ pub.curso }}</strong>
+        <br>
+        <small>{{ pub.catedratico }}</small>
+      </li>
+    </ul>
+  </div>
+
+  <ng-template #noResultados>
+    <p>No hay publicaciones</p>
+  </ng-template>
+</div>
