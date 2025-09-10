@@ -3,6 +3,11 @@ const bodyParser = require('body-parser');
 const sqlite3 = require('sqlite3').verbose();
 const cors = require('cors');
 
+//holi
+const express = require("express");
+const router = express.Router();
+const db = require("../db"); // conexión MySQL
+
 const app = express();
 app.use(cors());
 app.use(bodyParser.json());
@@ -68,6 +73,20 @@ db.serialize(() => {
       FOREIGN KEY (userId) REFERENCES users(registroAcademico)
     )
   `);
+
+//comentarios ale prueba
+
+ db.run(`
+    CREATE TABLE comentarios (
+      id INT AUTO_INCREMENT PRIMARY KEY,
+      publicacion_id INT NOT NULL,
+      usuario_id INT NOT NULL,
+      comentario TEXT NOT NULL,
+      fecha TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+      FOREIGN KEY (publicacion_id) REFERENCES publicaciones(id),
+      FOREIGN KEY (usuario_id) REFERENCES usuarios(id)
+`);
+
 
   // Usuario de ejemplo
   db.run(`
@@ -275,6 +294,41 @@ app.post('/api/posts', checkUser, (req, res) => {
     }
   );
 });
+
+
+//codigo prueba
+
+// Obtener comentarios de una publicación
+router.get("/:postId", (req, res) => {
+  const { postId } = req.params;
+  db.query(
+    "SELECT c.id, c.comentario, c.fecha, u.nombres, u.apellidos FROM comentarios c JOIN usuarios u ON c.usuario_id = u.id WHERE c.publicacion_id = ? ORDER BY c.fecha DESC",
+    [postId],
+    (err, results) => {
+      if (err) return res.status(500).json({ error: err });
+      res.json(results);
+    }
+  );
+});
+
+// Crear un comentario
+router.post("/", (req, res) => {
+  const { publicacion_id, usuario_id, comentario } = req.body;
+  db.query(
+    "INSERT INTO comentarios (publicacion_id, usuario_id, comentario, fecha) VALUES (?, ?, ?, NOW())",
+    [publicacion_id, usuario_id, comentario],
+    (err, result) => {
+      if (err) return res.status(500).json({ error: err });
+      res.json({ message: "Comentario agregado con éxito" });
+    }
+  );
+});
+
+module.exports = router;
+
+
+
+
 
 // 4. Arranca el servidor
 const PORT = 3000;
