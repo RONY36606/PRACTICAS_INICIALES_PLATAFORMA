@@ -43,40 +43,45 @@ export class PaginaPrincipalComponent implements OnInit {
   }
 
   //este metodo sera para realizar las busquedas de los cursos segun el filtro indicado
-  get publicacionesFiltradas() {
-    // Primero verificamos que las publicaciones tengan los campos necesarios
-    let resultado = this.posts.filter(pub => {
-      // Asegurarnos de que la publicación tenga los campos necesarios
-      if (!pub || !pub.curso) return false;
-      
-      const curso = pub.curso.toLowerCase();
-      const tipo = pub.tipo || '';
-      
-      // Para filtrar por curso
-      const coincideCurso = this.filtroCurso === '' || 
-        curso.includes(this.filtroCurso.toLowerCase());
-      
-      // Para filtrar por catedrático (solo para publicaciones de tipo 'teacher')
-      let coincideCatedratico = true;
-      if (this.filtroCatedratico !== '') {
-        coincideCatedratico = tipo === 'teacher' && 
-          curso.includes(this.filtroCatedratico.toLowerCase());
-      }
-      
-      return coincideCurso && coincideCatedratico;
-    });
+get publicacionesFiltradas() {
+  let resultado = this.posts.filter(pub => {
+    if (!pub) return false;
 
-    // Aplicar ordenamiento
-    if (this.ordenSeleccionado === 'curso') {
-      resultado = resultado.sort((a, b) => (a.curso || '').localeCompare(b.curso || ''));
-    } else if (this.ordenSeleccionado === 'catedratico') {
-      // Ordenar por catedrático (solo posts de tipo 'teacher')
-      resultado = resultado.filter(pub => pub.tipo === 'teacher')
-                          .sort((a, b) => (a.curso || '').localeCompare(b.curso || ''));
+    const curso = (pub.curso || '').toLowerCase();
+    const tipo = pub.tipo || '';
+    const mensaje = (pub.mensaje || '').toLowerCase();
+
+    // Filtrar por curso (solo si el tipo es 'course')
+    let coincideCurso = true;
+    if (this.filtroCurso !== '') {
+      coincideCurso = tipo === 'course' && curso.includes(this.filtroCurso.toLowerCase());
     }
 
-    return resultado;
+    // Filtrar por catedrático (solo si el tipo es 'teacher')
+    let coincideCatedratico = true;
+    if (this.filtroCatedratico !== '') {
+      coincideCatedratico = tipo === 'teacher' && curso.includes(this.filtroCatedratico.toLowerCase());
+    }
+
+    return coincideCurso && coincideCatedratico;
+  });
+
+  // Ordenamiento
+  if (this.ordenSeleccionado === 'curso') {
+    // Solo ordenar cursos
+    resultado = resultado
+      .filter(pub => pub.tipo === 'course')
+      .sort((a, b) => (a.curso || '').localeCompare(b.curso || ''));
+  } else if (this.ordenSeleccionado === 'catedratico') {
+    // Solo ordenar catedráticos
+    resultado = resultado
+      .filter(pub => pub.tipo === 'teacher')
+      .sort((a, b) => (a.curso || '').localeCompare(b.curso || ''));
   }
+
+  return resultado;
+}
+
 
 
   logout(): void {
