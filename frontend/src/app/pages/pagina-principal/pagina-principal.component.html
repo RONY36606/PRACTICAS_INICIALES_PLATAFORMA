@@ -29,23 +29,33 @@
       <input [(ngModel)]="filtroCatedratico" class="form-control" placeholder="Filtrar por Catedrático">
     </div>
 
-    <!-- Este div es para el combo box con las opciones de orden alfabetico -->
+    <!-- Combo box con las opciones de orden alfabético -->
     <div class="col-md-3">
     <select [(ngModel)]="ordenSeleccionado" class="form-select">
-      <option value="">Sin orden alfabetico</option>
+      <option value="">Sin orden alfabético</option>
       <option value="curso">Ordenar por Curso (A–Z)</option>
       <option value="catedratico">Ordenar por Catedrático (A–Z)</option>
     </select>
     </div>
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+    <button class="btn btn-primary" [routerLink]="['/posts']">
+      <i class="bi bi-plus-circle"></i> Crear Publicación
+    </button>
+  </div>
   </div>
 
   <h3>Publicaciones</h3>
   <div *ngIf="publicacionesFiltradas.length > 0; else noResultados">
     <ul class="list-group">
       <li *ngFor="let pub of publicacionesFiltradas" class="list-group-item">
-        <strong>{{ pub.curso }}</strong>
+        <strong>{{ pub.curso }}</strong> - {{ pub.tipo === 'course' ? 'Curso' : 'Catedrático' }}
         <br>
-        <small>{{ pub.catedratico }}</small>
+        <p>{{ pub.mensaje }}</p>
+        <small>
+          Publicado por: {{ pub.nombre }} {{ pub.apellido }} | 
+          Fecha: {{ pub.fechaCreacion | date:'short' }}
+        </small>
       </li>
     </ul>
   </div>

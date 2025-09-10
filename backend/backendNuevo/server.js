@@ -233,16 +233,45 @@ app.post('/api/reset-password', (req, res) => {
   );
 });
 
-// para obtener las publicaciones
+// Endpoint para obtener publicaciones con información del usuario
 app.get('/api/posts', (req, res) => {
   db.all(
-    'SELECT * FROM posts ORDER BY datetime(fechaCreacion) DESC',
+    `SELECT p.*, u.nombre, u.apellido 
+     FROM posts p 
+     JOIN users u ON p.userId = u.registroAcademico 
+     ORDER BY datetime(p.fechaCreacion) DESC`,
     [],
     (err, rows) => {
       if (err) {
-        return res.status(500).json({ message: 'Error no hay publicaciones' });
+        console.error('Error en la consulta:', err);
+        return res.status(500).json({ message: 'Error al obtener publicaciones' });
       }
       res.json(rows);
+    }
+  );
+});
+
+// Endpoint para crear publicación
+app.post('/api/posts', checkUser, (req, res) => {
+  const { tipo, curso, mensaje } = req.body;
+  const { registroAcademico } = req.user;
+  
+  if (!tipo || !curso || !mensaje) {
+    return res.status(400).json({ message: 'Tipo, curso y mensaje son requeridos' });
+  }
+  
+  db.run(
+    'INSERT INTO posts (userId, tipo, curso, mensaje) VALUES (?, ?, ?, ?)',
+    [registroAcademico, tipo, curso, mensaje],
+    function(err) {
+      if (err) {
+        return res.status(500).json({ message: 'Error al crear publicación' });
+      }
+      
+      res.status(201).json({
+        message: 'Publicación creada exitosamente',
+        postId: this.lastID
+      });
     }
   );
 });
