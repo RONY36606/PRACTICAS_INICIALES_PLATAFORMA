@@ -1,5 +1,5 @@
 
-import { useEffect, useState } from "react";
+/*import { useEffect, useState } from "react";
 import axios from "axios";
 
 export default function Comments({ postId, userId }) {
@@ -52,3 +52,4 @@ export default function Comments({ postId, userId }) {
     </div>
   );
 }
+*/

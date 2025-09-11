@@ -3,10 +3,12 @@ const bodyParser = require('body-parser');
 const sqlite3 = require('sqlite3').verbose();
 const cors = require('cors');
 
+/*
 //holi
 const express = require("express");
 const router = express.Router();
 const db = require("../db"); // conexión MySQL
+*/
 
 const app = express();
 app.use(cors());
@@ -73,7 +75,7 @@ db.serialize(() => {
       FOREIGN KEY (userId) REFERENCES users(registroAcademico)
     )
   `);
-
+/*
 //comentarios ale prueba
 
  db.run(`
@@ -86,7 +88,7 @@ db.serialize(() => {
       FOREIGN KEY (publicacion_id) REFERENCES publicaciones(id),
       FOREIGN KEY (usuario_id) REFERENCES usuarios(id)
 `);
-
+*/
 
   // Usuario de ejemplo
   db.run(`
@@ -295,7 +297,7 @@ app.post('/api/posts', checkUser, (req, res) => {
   );
 });
 
-
+/*
 //codigo prueba
 
 // Obtener comentarios de una publicación
@@ -310,6 +312,7 @@ router.get("/:postId", (req, res) => {
     }
   );
 });
+*/
 
 // Crear un comentario
 router.post("/", (req, res) => {
