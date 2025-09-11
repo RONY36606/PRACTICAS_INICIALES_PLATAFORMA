@@ -1,13 +1,11 @@
 .card {
   border: 1px solid #ddd;
-  border-radius: 8px;
+  border-radius: 5px;
   box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 
 .card-title {
   color: #2c3e50;
-  border-bottom: 1px solid #eee;
-  padding-bottom: 10px;
   margin-bottom: 15px;
 }
 
@@ -42,6 +40,7 @@
 .btn {
   border-radius: 4px;
   padding: 8px 16px;
+  margin-right: 10px;
 }
 
 .btn-primary {
@@ -52,4 +51,29 @@
 .btn-primary:hover {
   background-color: #2980b9;
   border-color: #2980b9;
+}
+
+.btn-outline-primary {
+  color: #3498db;
+  border-color: #3498db;
+}
+
+.btn-outline-primary:hover {
+  background-color: #3498db;
+  color: white;
+}
+
+.btn-success {
+  background-color: #27ae60;
+  border-color: #27ae60;
+}
+
+.btn-success:hover {
+  background-color: #219653;
+  border-color: #219653;
+}
+
+.comment-card {
+  background-color: #f8f9fa;
+  border: 1px solid #e9ecef;
 }
