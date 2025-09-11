@@ -409,4 +409,8 @@ private loadCursosAprobados(): void {
     error: e => console.error('Error cargando cursos aprobados:', e)
   });
 }
+
+  onBackToMain(): void {
+    this.router.navigate(['/principal']);
+  }
 }

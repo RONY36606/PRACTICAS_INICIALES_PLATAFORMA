@@ -1,14 +1,21 @@
-<!-- Navbar original sin cambios -->
 <nav class="navbar bg-dark border-bottom border-body" data-bs-theme="dark">
-  <div class="container-fluid">
-    <a class="navbar-brand py-0" href="#">
-      <img src="https://uedi.ingenieria.usac.edu.gt/campus/pluginfile.php/1/core_admin/logocompact/300x300/1755017790/uedilogo.png" 
-           alt="Logo" width="150" height="55">
-    </a>
-    <div class="d-flex">
-      <button class="btn btn-outline-light me-2" (click)="verPerfil()">Ver Perfil</button>
-      <button class="btn btn-outline-light" (click)="logout()">Cerrar Sesión</button>
-    </div>
+    <div class="container-fluid">
+     <a class="navbar-brand py-0" href="#">
+      <img src="https://uedi.ingenieria.usac.edu.gt/campus/pluginfile.php/1/core_admin/logocompact/300x300/1755017790/uedilogo.png" alt="Logo" width="150" height="55" ></a>
+        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+          <li class="nav-item">
+            <a class="nav-link" style="cursor: pointer;" (click)="logout()" >Regresar al Login</a>
+          </li>
+        </ul>
+        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+          <li class="nav-item">
+            <a class="nav-link" style="cursor: pointer;" (click)="verPerfil()" >Ver perfil</a>
+          </li>
+        </ul>
+    <form class="d-flex" role="search">
+      <input class="form-control me-2" data-bs-theme="light" type="search" placeholder="Buscar usuarios" aria-label="Search"/>
+      <button class="btn btn-success" type="submit">Buscar</button>
+    </form>
   </div>
 </nav>
 
