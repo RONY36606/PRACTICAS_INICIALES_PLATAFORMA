@@ -4,6 +4,7 @@ const sqlite3 = require('sqlite3').verbose();
 const cors = require('cors');
 
 
+
 const app = express();
 app.use(cors());
 app.use(bodyParser.json());
@@ -276,6 +277,68 @@ app.post('/api/posts', checkUser, (req, res) => {
     }
   );
 });
+
+// =====================
+// ENDPOINT: Crear comentario en una publicación
+// =====================
+app.post('/api/posts/:postId/comments', checkUser, (req, res) => {
+  const { mensaje } = req.body;
+  const { registroAcademico } = req.user;
+  const { postId } = req.params;
+
+  if (!mensaje) {
+    return res.status(400).json({ message: 'El comentario no puede estar vacío' });
+  }
+
+  // Verificar que la publicación exista
+  db.get('SELECT * FROM posts WHERE id = ?', [postId], (err, post) => {
+    if (err) return res.status(500).json({ message: 'Error en el servidor' });
+    if (!post) return res.status(404).json({ message: 'Publicación no encontrada' });
+
+    // Insertar comentario
+    db.run(
+      'INSERT INTO comments (postId, userId, mensaje) VALUES (?, ?, ?)',
+      [postId, registroAcademico, mensaje],
+      function (err) {
+        if (err) {
+          return res.status(500).json({ message: 'Error al crear comentario' });
+        }
+
+        res.status(201).json({
+          message: 'Comentario agregado exitosamente',
+          commentId: this.lastID
+        });
+      }
+    );
+  });
+});
+
+// =====================
+// ENDPOINT: Obtener comentarios de una publicación
+// =====================
+app.get('/api/posts/:postId/comments', (req, res) => {
+  const { postId } = req.params;
+
+  db.all(
+    `SELECT c.*, u.nombre, u.apellido
+     FROM comments c
+     JOIN users u ON c.userId = u.registroAcademico
+     WHERE c.postId = ?
+     ORDER BY datetime(c.fechaCreacion) ASC`,
+    [postId],
+    (err, rows) => {
+      if (err) {
+        console.error('Error en la consulta:', err);
+        return res.status(500).json({ message: 'Error al obtener comentarios' });
+      }
+
+      res.json(rows);
+    }
+  );
+});
+
+
+
 
 
 
